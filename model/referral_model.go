@@ -92,12 +92,12 @@ func (r *ReferralRepo) Register(Parent_id, Child_id, idToken int) error {
 	}
 
 	res := r.db.Table("referral_tree").Create(&record)
-	resHis := r.db.Table("referral_tree_hist").Create(&his)
 	if res.Error != nil {
 		return res.Error
 	}
+	resHis := r.db.Table("referral_tree_hist").Create(&his)
 	if resHis.Error != nil {
-		return res.Error
+		return resHis.Error
 	}
 
 	return nil
