@@ -1,15 +1,15 @@
 package config
 
 import (
-	"referralUser-service/helper"
-	"referralUser-service/model"
+	"reward-list-service/helper"
+	"reward-list-service/model"
 )
 
-func RepositoryFactory(dbCon *DatabaseConnection) helper.AuthService {
-	var Repository helper.AuthService
+func RepositoryFactory(dbCon *DatabaseConnection) helper.RewardList {
+	var Repository helper.RewardList
 
 	if dbCon.Driver == PostgreSQL {
-		Repository = model.NewRegisterReferral(dbCon.PostgreSQL)
+		Repository = model.NewStoreReward(dbCon.PostgreSQL)
 	} else {
 		panic("Database driver not supported")
 	}

@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"referralUser-service/config"
-	"referralUser-service/modules"
-	"referralUser-service/router"
+	"reward-list-service/config"
+	"reward-list-service/modules"
+	"reward-list-service/router"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -34,5 +34,4 @@ func main() {
 	quit := make(chan os.Signal)
 	signal.Notify(quit, os.Interrupt)
 	<-quit
-
 }

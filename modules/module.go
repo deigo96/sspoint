@@ -1,19 +1,19 @@
 package modules
 
 import (
-	"referralUser-service/config"
-	"referralUser-service/controller"
-	"referralUser-service/handler"
-	"referralUser-service/helper"
-	"referralUser-service/router"
+	"reward-list-service/config"
+	"reward-list-service/controller"
+	"reward-list-service/handler"
+	"reward-list-service/helper"
+	"reward-list-service/router"
 )
 
 func RegisterModules(dbCon *config.DatabaseConnection, c *config.AppConfig) router.Controller {
-	refferal := config.RepositoryFactory(dbCon)
+	reward := config.RepositoryFactory(dbCon)
 	jwtService := handler.NewJWTService()
-	referralService := helper.NewRereferralService(refferal)
+	rewardService := helper.NewRewardService(reward)
 	controller := router.Controller{
-		Auth: controller.NewAuthController(referralService, jwtService),
+		Auth: controller.NewAuthController(rewardService, jwtService),
 	}
 
 	return controller

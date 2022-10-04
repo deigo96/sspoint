@@ -8,88 +8,62 @@ import (
 	"strings"
 
 	"github.com/elgs/gojq"
-	"github.com/labstack/echo/v4"
 )
 
-type AuthService interface {
-	GetReferral(id int, token string) (d []Result)
-	Register(Parent_id int, Child_id int, idToken int) error
-	UpdateReferral(Parent_id int, Child_id int, To_Parent_id int, idToken int) error
+type RewardList interface {
+	GetRewardList() (d []Data)
+	StoreRewardList(id int, s StoreRewardRequest) error
+	UpdateRewardList(id int, idReward int, s StoreRewardRequest) error
 }
 
-type RefferralService interface {
-	GetRef(id int, token string) (g GetData, err error)
-	RegisterRef(Parent_id int, Child_id int, idToken int) (*Data, error)
-	UpdateRef(Parent_id int, Child_id int, To_Parent_id int, idToken int) (*Update, error)
+type RewardService interface {
+	GetReward() (g GetData, err error)
+	StoreReward(id int, s StoreRewardRequest) (*StoreRewardRequest, error)
+	UpdateReward(id int, idReward int, s StoreRewardRequest) (*Idreward, error)
 }
 
-type referralService struct {
-	referral AuthService
+type rewardService struct {
+	reward RewardList
 }
 
-func NewRereferralService(referral AuthService) RefferralService {
-	return &referralService{
-		referral: referral,
+func NewRewardService(reward RewardList) RewardService {
+	return &rewardService{
+		reward: reward,
 	}
 }
 
-type Echo interface {
-	echo.Context
-}
-
-func (r *referralService) GetRef(id int, token string) (res GetData, err error) {
-	info := []Info{}
-	upline := []Upline{}
-	downline := []Downline{}
-	domain := []Result{}
-
-	data := r.referral.GetReferral(id, token)
-	dataParent, _ := GetIdToken(token)
-
-	for _, d := range data {
-		domain = append(domain, d)
+func (r *rewardService) GetReward() (res GetData, err error) {
+	result := []Data{}
+	data := r.reward.GetRewardList()
+	for _, i := range data {
+		result = append(result, i)
 	}
 
-	u := Upline{
-		TotalAllData: dataParent.TotalAllData,
-		Results:      dataParent.Results,
-	}
-	d := Downline{
-		TotalAllData: len(domain),
-		Results:      domain,
-	}
-	upline = append(upline, u)
-	downline = append(downline, d)
-	i := Info{
-		Upline:   upline,
-		Downline: downline,
-	}
-
-	info = append(info, i)
-
-	res.TotalAllData = u.TotalAllData + d.TotalAllData
-	res.Result = info
+	res.TotalAllData = len(result)
+	res.Result = result
 
 	return res, nil
 }
 
-func (r *referralService) RegisterRef(Parent_id int, Child_id int, idToken int) (*Data, error) {
-	err := r.referral.Register(Parent_id, Child_id, idToken)
+func (r *rewardService) StoreReward(id int, s StoreRewardRequest) (*StoreRewardRequest, error) {
+	err := r.reward.StoreRewardList(id, s)
 	if err != nil {
 		return nil, err
 	}
+
 	return nil, nil
 }
 
-func (r *referralService) UpdateRef(Parent_id int, Child_id int, To_Parent_id int, idToken int) (*Update, error) {
-	err := r.referral.UpdateReferral(Parent_id, Child_id, To_Parent_id, idToken)
+func (r *rewardService) UpdateReward(id int, idReward int, s StoreRewardRequest) (*Idreward, error) {
+	err := r.reward.UpdateRewardList(id, idReward, s)
 	if err != nil {
 		return nil, err
 	}
-	return nil, nil
+
+	return nil, err
 }
 
-func GetIdToken(token string) (res Upline, err error) {
+func GetIdToken(token string) (id int, err error) {
 	url := fmt.Sprintf("http://192.168.97.121:8000/seen/user/profile")
 	var bearer = "Bearer " + token
 	req, err := http.NewRequest("GET", url, nil)
@@ -114,19 +88,8 @@ func GetIdToken(token string) (res Upline, err error) {
 		fmt.Println(parser)
 	}
 	d, _ := parser.QueryToInt64("message.data.id")
-	name, _ := parser.QueryToString("message.data.username")
+	id = int(d)
 
-	result := []Result{}
+	return id, nil
 
-	r := Result{
-		Parent_id: int(d),
-		Name:      name,
-	}
-
-	result = append(result, r)
-
-	res.TotalAllData = len(result)
-	res.Results = result
-
-	return res, nil
 }
