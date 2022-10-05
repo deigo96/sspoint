@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"referralUser-service/config"
-	"referralUser-service/modules"
-	"referralUser-service/router"
+	"transactionType-service/config"
+	"transactionType-service/modules"
+	"transactionType-service/router"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"

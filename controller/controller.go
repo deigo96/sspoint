@@ -2,8 +2,8 @@ package controller
 
 import (
 	"net/http"
-	"referralUser-service/handler"
-	"referralUser-service/helper"
+	"transactionType-service/handler"
+	"transactionType-service/helper"
 
 	"github.com/labstack/echo/v4"
 )

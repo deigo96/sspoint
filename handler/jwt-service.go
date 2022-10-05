@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"referralUser-service/config"
+	"transactionType-service/config"
 
 	"github.com/elgs/gojq"
 )

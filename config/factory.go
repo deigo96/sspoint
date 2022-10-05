@@ -1,8 +1,8 @@
 package config
 
 import (
-	"referralUser-service/helper"
-	"referralUser-service/model"
+	"transactionType-service/helper"
+	"transactionType-service/model"
 )
 
 func RepositoryFactory(dbCon *DatabaseConnection) helper.TransactionTypeList {

@@ -2,8 +2,8 @@ package model
 
 import (
 	"errors"
-	"referralUser-service/helper"
 	"time"
+	"transactionType-service/helper"
 
 	"gorm.io/gorm"
 )

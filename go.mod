@@ -1,4 +1,4 @@
-module referralUser-service
+module transactionType-service
 
 go 1.19
 

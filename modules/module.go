@@ -1,11 +1,11 @@
 package modules
 
 import (
-	"referralUser-service/config"
-	"referralUser-service/controller"
-	"referralUser-service/handler"
-	"referralUser-service/helper"
-	"referralUser-service/router"
+	"transactionType-service/config"
+	"transactionType-service/controller"
+	"transactionType-service/handler"
+	"transactionType-service/helper"
+	"transactionType-service/router"
 )
 
 func RegisterModules(dbCon *config.DatabaseConnection, c *config.AppConfig) router.Controller {

@@ -1,7 +1,7 @@
 package router
 
 import (
-	"referralUser-service/controller"
+	"transactionType-service/controller"
 
 	"github.com/labstack/echo/v4"
 )
