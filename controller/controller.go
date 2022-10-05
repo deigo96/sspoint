@@ -148,7 +148,8 @@ func (controller *AuthController) UpdateReferral(c echo.Context) (err error) {
 
 	_, err = controller.Service.UpdateRef(req.Parent_id, req.Child_id, req.To_Parent_id, id)
 	if err != nil {
-		return err
+		response := helper.BuildErrorResponse("No record found", helper.EmptyObj{})
+		return c.JSON(http.StatusBadRequest, response)
 	}
 
 	response := helper.BuildSuccessResponse(true, "Success Update upline user referral", helper.EmptyObj{})
