@@ -1,14 +1,16 @@
 package helper
 
-import "time"
+import (
+	"time"
+)
 
 type TransactionPoint struct {
-	Trx_Type_Id  int `json:"trxTypeId" form:"trxTypeId"`
-	Reward_Id    int `json:"rewardId" form:"rewardId"`
-	Point        int `json:"point" form:"point"`
-	Own_Pct      int `json:"ownPct" form:"ownPct"`
-	Referral_Pct int `json:"referralPct" form:"referralPct"`
-	Branch_Pct   int `json:"branchPct" form:"branchPct"`
+	Trx_Type_Id  int  `json:"trxTypeId" form:"trxTypeId"`
+	Reward_Id    *int `json:"rewardId,omitempty" form:"rewardId"`
+	Point        int  `json:"point" form:"point"`
+	Own_Pct      int  `json:"ownPct" form:"ownPct"`
+	Referral_Pct int  `json:"referralPct" form:"referralPct"`
+	Branch_Pct   int  `json:"branchPct" form:"branchPct"`
 }
 
 type IdTransactionPoint struct {

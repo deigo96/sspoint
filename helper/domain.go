@@ -6,7 +6,7 @@ import (
 
 type StoreTransactionPoint struct {
 	Trx_Type_Id  int
-	Reward_Id    int
+	Reward_Id    *int
 	Ss_Point     int
 	Own_Pct      int
 	Referral_Pct int
@@ -17,7 +17,7 @@ type StoreTransactionPoint struct {
 
 type UpdateTransactionPoint struct {
 	Trx_Type_Id  int
-	Reward_Id    int
+	Reward_Id    *int
 	Ss_Point     int
 	Own_Pct      int
 	Referral_Pct int
@@ -27,13 +27,13 @@ type UpdateTransactionPoint struct {
 	Updated_by   int
 }
 
-// type StoreTransactionPointHistory struct {
-// 	Trx_Type_Id  int
-// 	Reward_Id    int
-// 	Ss_Point     int
-// 	Own_Pct      int
-// 	Referral_Pct int
-// 	Branch_Pct   int
-// 	Created_at   time.Time
-// 	Created_by   int
-// }
+type StoreTransactionPointHistory struct {
+	Trx_Type_Id       int
+	Reward_Id         *int
+	Ss_Point          int
+	Own_User_Pct      int
+	Referral_User_Pct int
+	Branch_Pct        int
+	Created_at        time.Time
+	Created_by        int
+}

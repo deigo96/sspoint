@@ -40,7 +40,7 @@ func (controller *AuthController) StoreTransactionPoint(c echo.Context) (err err
 		return c.JSON(http.StatusBadRequest, response)
 	}
 
-	if req.Trx_Type_Id == 0 || req.Reward_Id == 0 || req.Point == 0 || req.Own_Pct == 0 || req.Referral_Pct == 0 || req.Branch_Pct == 0 {
+	if req.Trx_Type_Id == 0 || req.Point == 0 || req.Own_Pct == 0 || req.Referral_Pct == 0 || req.Branch_Pct == 0 {
 		response := helper.BuildErrorResponse("All fields are required", helper.EmptyObj{})
 		return c.JSON(http.StatusBadRequest, response)
 	}

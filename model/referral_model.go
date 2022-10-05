@@ -30,12 +30,23 @@ func (t *TransactionPointRepo) StoreTransactionPointList(id int, s helper.Transa
 		Created_at:   time.Now(),
 	}
 
+	recordHis := helper.StoreTransactionPointHistory{
+		Trx_Type_Id:       s.Trx_Type_Id,
+		Reward_Id:         s.Reward_Id,
+		Ss_Point:          s.Point,
+		Own_User_Pct:      s.Own_Pct,
+		Referral_User_Pct: s.Referral_Pct,
+		Branch_Pct:        s.Branch_Pct,
+		Created_by:        id,
+		Created_at:        time.Now(),
+	}
+
 	res := t.db.Table("transaction_point").Create(&record)
 	if res.Error != nil {
 		return res.Error
 	}
 
-	resHis := t.db.Table("transaction_point_his").Create(&record)
+	resHis := t.db.Table("transaction_point_hist").Create(&recordHis)
 	if resHis.Error != nil {
 		return res.Error
 	}
@@ -66,15 +77,16 @@ func (t *TransactionPointRepo) UpdateTransactionPointList(id int, IdTransactionP
 		Updated_by:   id,
 		Updated_at:   time.Now(),
 	}
-	recordHis := helper.StoreTransactionPoint{
-		Trx_Type_Id:  s.Trx_Type_Id,
-		Reward_Id:    s.Reward_Id,
-		Ss_Point:     s.Point,
-		Own_Pct:      s.Own_Pct,
-		Referral_Pct: s.Referral_Pct,
-		Branch_Pct:   s.Branch_Pct,
-		Created_by:   id,
-		Created_at:   time.Now(),
+
+	recordHis := helper.StoreTransactionPointHistory{
+		Trx_Type_Id:       s.Trx_Type_Id,
+		Reward_Id:         s.Reward_Id,
+		Ss_Point:          s.Point,
+		Own_User_Pct:      s.Own_Pct,
+		Referral_User_Pct: s.Referral_Pct,
+		Branch_Pct:        s.Branch_Pct,
+		Created_by:        id,
+		Created_at:        time.Now(),
 	}
 
 	res := t.db.Table("transaction_point").Where("id = ?", IdTransactionPoint).Updates(&record)
@@ -82,7 +94,7 @@ func (t *TransactionPointRepo) UpdateTransactionPointList(id int, IdTransactionP
 		return res.Error
 	}
 
-	resHis := t.db.Table("transaction_point_his").Create(&recordHis)
+	resHis := t.db.Table("transaction_point_hist").Create(&recordHis)
 	if resHis.Error != nil {
 		return res.Error
 	}
