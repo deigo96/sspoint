@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -123,7 +124,7 @@ func (r *ReferralRepo) UpdateReferral(Parent_id, Child_id, To_Parent_id int, idT
 		return res.Error
 	}
 	if res.RowsAffected == 0 {
-		return fmt.Errorf("No record found")
+		return errors.New("No record found")
 	}
 
 	r.db.Table("referral_tree_hist").Create(&his)
