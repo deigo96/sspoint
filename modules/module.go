@@ -1,17 +1,17 @@
 package modules
 
 import (
-	"referralUser-service/config"
-	"referralUser-service/controller"
-	"referralUser-service/handler"
-	"referralUser-service/helper"
-	"referralUser-service/router"
+	"transactionPoint-service/config"
+	"transactionPoint-service/controller"
+	"transactionPoint-service/handler"
+	"transactionPoint-service/helper"
+	"transactionPoint-service/router"
 )
 
 func RegisterModules(dbCon *config.DatabaseConnection, c *config.AppConfig) router.Controller {
 	refferal := config.RepositoryFactory(dbCon)
 	jwtService := handler.NewJWTService()
-	referralService := helper.NewRereferralService(refferal)
+	referralService := helper.NewTransactionPointService(refferal)
 	controller := router.Controller{
 		Auth: controller.NewAuthController(referralService, jwtService),
 	}

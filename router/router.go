@@ -1,7 +1,7 @@
 package router
 
 import (
-	"referralUser-service/controller"
+	"transactionPoint-service/controller"
 
 	"github.com/labstack/echo/v4"
 )
@@ -11,7 +11,6 @@ type Controller struct {
 }
 
 func Routes(e *echo.Echo, controller *Controller) {
-	e.GET("/referralTree", controller.Auth.GetReferralUser)
-	e.POST("/referralTree", controller.Auth.RegisterReferral)
-	e.PUT("/referralTree", controller.Auth.UpdateReferral)
+	e.POST("/trxPoint", controller.Auth.StoreTransactionPoint)
+	e.PUT("/trxPoint", controller.Auth.UpdateTransactionPoint)
 }
