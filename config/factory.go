@@ -5,11 +5,11 @@ import (
 	"referralUser-service/model"
 )
 
-func RepositoryFactory(dbCon *DatabaseConnection) helper.AuthService {
-	var Repository helper.AuthService
+func RepositoryFactory(dbCon *DatabaseConnection) helper.TransactionTypeList {
+	var Repository helper.TransactionTypeList
 
 	if dbCon.Driver == PostgreSQL {
-		Repository = model.NewRegisterReferral(dbCon.PostgreSQL)
+		Repository = model.NewStoreReward(dbCon.PostgreSQL)
 	} else {
 		panic("Database driver not supported")
 	}

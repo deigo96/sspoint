@@ -8,88 +8,47 @@ import (
 	"strings"
 
 	"github.com/elgs/gojq"
-	"github.com/labstack/echo/v4"
 )
 
-type AuthService interface {
-	GetReferral(id int, token string) (d []Result)
-	Register(Parent_id int, Child_id int, idToken int) error
-	UpdateReferral(Parent_id int, Child_id int, To_Parent_id int, idToken int) error
+type TransactionTypeList interface {
+	StoreTransactionTypeList(id int, s TransactionType) error
+	UpdateTransactionTypeList(id int, idTransaction int, s TransactionType) error
 }
 
-type RefferralService interface {
-	GetRef(id int, token string) (g GetData, err error)
-	RegisterRef(Parent_id int, Child_id int, idToken int) (*Data, error)
-	UpdateRef(Parent_id int, Child_id int, To_Parent_id int, idToken int) (*Update, error)
+type TransactionTypeService interface {
+	StoreTransactionTypeService(id int, s TransactionType) (*TransactionType, error)
+	UpdateTransactionTypeService(id int, idTransaction int, s TransactionType) (*IdTransactionType, error)
 }
 
-type referralService struct {
-	referral AuthService
+type transactionService struct {
+	transaction TransactionTypeList
 }
 
-func NewRereferralService(referral AuthService) RefferralService {
-	return &referralService{
-		referral: referral,
+func NewTransactionTypeService(transaction TransactionTypeList) TransactionTypeService {
+	return &transactionService{
+		transaction: transaction,
 	}
 }
 
-type Echo interface {
-	echo.Context
-}
-
-func (r *referralService) GetRef(id int, token string) (res GetData, err error) {
-	info := []Info{}
-	upline := []Upline{}
-	downline := []Downline{}
-	domain := []Result{}
-
-	data := r.referral.GetReferral(id, token)
-	dataParent, _ := GetIdToken(token)
-
-	for _, d := range data {
-		domain = append(domain, d)
-	}
-
-	u := Upline{
-		TotalAllData: dataParent.TotalAllData,
-		Results:      dataParent.Results,
-	}
-	d := Downline{
-		TotalAllData: len(domain),
-		Results:      domain,
-	}
-	upline = append(upline, u)
-	downline = append(downline, d)
-	i := Info{
-		Upline:   upline,
-		Downline: downline,
-	}
-
-	info = append(info, i)
-
-	res.TotalAllData = u.TotalAllData + d.TotalAllData
-	res.Result = info
-
-	return res, nil
-}
-
-func (r *referralService) RegisterRef(Parent_id int, Child_id int, idToken int) (*Data, error) {
-	err := r.referral.Register(Parent_id, Child_id, idToken)
+func (t *transactionService) StoreTransactionTypeService(id int, s TransactionType) (*TransactionType, error) {
+	err := t.transaction.StoreTransactionTypeList(id, s)
 	if err != nil {
 		return nil, err
 	}
+
 	return nil, nil
 }
 
-func (r *referralService) UpdateRef(Parent_id int, Child_id int, To_Parent_id int, idToken int) (*Update, error) {
-	err := r.referral.UpdateReferral(Parent_id, Child_id, To_Parent_id, idToken)
+func (t *transactionService) UpdateTransactionTypeService(id int, idTransactionType int, s TransactionType) (*IdTransactionType, error) {
+	err := t.transaction.UpdateTransactionTypeList(id, idTransactionType, s)
 	if err != nil {
 		return nil, err
 	}
-	return nil, nil
+
+	return nil, err
 }
 
-func GetIdToken(token string) (res Upline, err error) {
+func GetIdToken(token string) (id int, err error) {
 	url := fmt.Sprintf("http://192.168.97.121:8000/seen/user/profile")
 	var bearer = "Bearer " + token
 	req, err := http.NewRequest("GET", url, nil)
@@ -114,19 +73,8 @@ func GetIdToken(token string) (res Upline, err error) {
 		fmt.Println(parser)
 	}
 	d, _ := parser.QueryToInt64("message.data.id")
-	name, _ := parser.QueryToString("message.data.username")
+	id = int(d)
 
-	result := []Result{}
+	return id, nil
 
-	r := Result{
-		Parent_id: int(d),
-		Name:      name,
-	}
-
-	result = append(result, r)
-
-	res.TotalAllData = len(result)
-	res.Results = result
-
-	return res, nil
 }

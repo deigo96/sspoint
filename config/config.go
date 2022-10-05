@@ -80,9 +80,9 @@ func GetServer() ServerConfig {
 		fmt.Println(err)
 	}
 
-	sName, _ := parser.QueryToString("data.results.[2].serviceName")
-	host, _ := parser.QueryToString("data.results.[2].serviceHost")
-	sPort, _ := parser.QueryToString("data.results.[2].servicePort")
+	sName, _ := parser.QueryToString("data.results.[5].serviceName")
+	host, _ := parser.QueryToString("data.results.[5].serviceHost")
+	sPort, _ := parser.QueryToString("data.results.[5].servicePort")
 
 	port := fmt.Sprintf(":%s", sPort)
 	fmt.Printf("server %s started on port %s", sName, sPort)

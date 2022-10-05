@@ -2,11 +2,13 @@ package helper
 
 import "time"
 
-type RegisterReferral struct {
-	Parent_id    int `json:"parent_id" form:"parent_id"`
-	Child_id     int `json:"child_id" form:"child_id"`
-	To_Parent_id int `json:"to_parent_id" form:"to_parent_id"`
-	// Created_by string `json:"created_at" form:"created_by"`
+type TransactionType struct {
+	Type_Name        string `json:"parent_id" form:"typeName"`
+	Type_Description string `json:"child_id" form:"typeDescription"`
+}
+
+type IdTransactionType struct {
+	Id_Transaction_type int `json:"idTransaction" form:"typeId"`
 }
 
 func current_time(format string) string {
