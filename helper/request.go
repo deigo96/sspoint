@@ -3,8 +3,8 @@ package helper
 import "time"
 
 type TransactionType struct {
-	Type_Name        string `json:"parent_id" form:"typeName"`
-	Type_Description string `json:"child_id" form:"typeDescription"`
+	Type_Name        string `json:"typeName" form:"typeName"`
+	Type_Description string `json:"typeDescription" form:"typeDescription"`
 }
 
 type IdTransactionType struct {
