@@ -1,24 +1,17 @@
 package model
 
 import (
-	"fmt"
-	"io/ioutil"
-	"log"
-	"net/http"
-	"referralUser-service/helper"
-	"strings"
-	"time"
+	"pointHistory-service/helper"
 
-	"github.com/elgs/gojq"
 	"gorm.io/gorm"
 )
 
-type ReferralRepo struct {
+type PointRepo struct {
 	db *gorm.DB
 }
 
-func NewRegisterReferral(db *gorm.DB) helper.AuthService {
-	return &ReferralRepo{
+func NewPointHistoryService(db *gorm.DB) helper.PointHistoryList {
+	return &PointRepo{
 		db: db,
 	}
 }
@@ -31,101 +24,22 @@ func a() int {
 	return 1
 }
 
-func (r *ReferralRepo) GetReferral(id int, token string) (d []helper.Result) {
-	var resp []helper.ReqId
-	res := r.db.Table("referral_tree").Where("created_by = ?", id).Find(&resp)
+func (p *PointRepo) GetPointHistoryList(id int, t helper.TrxPointRequest) (d []helper.Data) {
+	// fromTrxDate, _ := time.Parse("2006-01-01", t.FromTrxDate)
+	// toTrxDate, _ := time.Parse("2006-01-01", t.ToTrxDate)
 
+	res := p.db.Table("referral_transaction").Select("referral_transaction.trx_date, transaction_type.type_name, referral_transaction.ss_point_before, referral_transaction.ss_point_trx, referral_transaction.ss_point_after").Joins("left join transaction_point on referral_transaction.trx_point_id = transaction_point.id").Joins("left join transaction_type on transaction_point.trx_type_id = transaction_type.id").Where("referral_transaction.trx_date >= ? AND referral_transaction.trx_date < ?", t.FromTrxDate, t.ToTrxDate).Find(&d)
 	if res.Error != nil {
 		return d
 	}
-
-	for _, arg := range resp {
-		url := fmt.Sprintf("http://192.168.97.121:8000/seen/user/detail/%d", arg.Child_id)
-		var bearer = "Bearer " + token
-		req, err := http.NewRequest("GET", url, nil)
-		req.Header.Add("Authorization", bearer)
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		if err != nil {
-			log.Println("Error on response.\n[ERROR] -", err)
-		}
-		defer resp.Body.Close()
-
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Println("Error while reading the response bytes:", err)
-		}
-
-		str := string(body)
-		p := strings.TrimSuffix(str, "\n")
-
-		parser, err := gojq.NewStringQuery(p)
-		if err != nil {
-			fmt.Println(parser)
-		}
-		name, _ := parser.QueryToString("message.data.username")
-		idUser, _ := parser.QueryToInt64("message.data.id")
-		// fmt.Println(idUser)
-		data := helper.Result{
-			Parent_id: int(idUser),
-			Name:      name,
-		}
-		d = append(d, data)
-	}
-
 	return d
-
 }
 
-func (r *ReferralRepo) Register(Parent_id, Child_id, idToken int) error {
-	record := helper.Postdata{
-		Parent_id:  Parent_id,
-		Child_id:   Child_id,
-		Created_at: time.Now(),
-		Created_by: idToken,
-	}
-	his := helper.Posthistory{
-		Parent_id:  record.Parent_id,
-		Child_id:   record.Child_id,
-		Created_at: time.Now(),
-		Created_by: record.Created_by,
-	}
-
-	res := r.db.Table("referral_tree").Create(&record)
-	resHis := r.db.Table("referral_tree_hist").Create(&his)
+func (p *PointRepo) StorePointHistoryList(s helper.StoreTrxPointReq) error {
+	res := p.db.Table("referral_transaction").Create(&s)
 	if res.Error != nil {
 		return res.Error
 	}
-	if resHis.Error != nil {
-		return res.Error
-	}
 
-	return nil
-}
-
-func (r *ReferralRepo) UpdateReferral(Parent_id, Child_id, To_Parent_id int, idToken int) error {
-	record := helper.UpdateData{
-		Parent_id:  To_Parent_id,
-		Child_id:   Child_id,
-		Updated_at: time.Now(),
-		Updated_by: idToken,
-	}
-	his := helper.Posthistory{
-		Parent_id:  record.Parent_id,
-		Child_id:   record.Child_id,
-		Created_at: time.Now(),
-		Created_by: idToken,
-	}
-
-	res := r.db.Table("referral_tree").Where("parent_id = ? AND child_id = ?", Parent_id, Child_id).Updates(&record)
-
-	if res.Error != nil {
-		return res.Error
-	}
-	if res.RowsAffected == 0 {
-		return fmt.Errorf("No record found")
-	}
-
-	r.db.Table("referral_tree_hist").Create(&his)
 	return nil
 }

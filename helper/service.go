@@ -8,88 +8,64 @@ import (
 	"strings"
 
 	"github.com/elgs/gojq"
-	"github.com/labstack/echo/v4"
 )
 
-type AuthService interface {
-	GetReferral(id int, token string) (d []Result)
-	Register(Parent_id int, Child_id int, idToken int) error
-	UpdateReferral(Parent_id int, Child_id int, To_Parent_id int, idToken int) error
+type PointHistoryList interface {
+	GetPointHistoryList(id int, t TrxPointRequest) (d []Data)
+	StorePointHistoryList(s StoreTrxPointReq) error
 }
 
-type RefferralService interface {
-	GetRef(id int, token string) (g GetData, err error)
-	RegisterRef(Parent_id int, Child_id int, idToken int) (*Data, error)
-	UpdateRef(Parent_id int, Child_id int, To_Parent_id int, idToken int) (*Update, error)
+type PointHistoryService interface {
+	GetPointHistoryService(id int, t TrxPointRequest) (g GetData, err error)
+	StorePointHistoryService(s StoreTrxPointReq) error
 }
 
-type referralService struct {
-	referral AuthService
+type pointHistoryService struct {
+	point PointHistoryList
 }
 
-func NewRereferralService(referral AuthService) RefferralService {
-	return &referralService{
-		referral: referral,
+func NewRewardService(point PointHistoryList) PointHistoryService {
+	return &pointHistoryService{
+		point: point,
 	}
 }
 
-type Echo interface {
-	echo.Context
-}
-
-func (r *referralService) GetRef(id int, token string) (res GetData, err error) {
-	info := []Info{}
-	upline := []Upline{}
-	downline := []Downline{}
-	domain := []Result{}
-
-	data := r.referral.GetReferral(id, token)
-	dataParent, _ := GetIdToken(token)
-
-	for _, d := range data {
-		domain = append(domain, d)
+func (p *pointHistoryService) GetPointHistoryService(id int, t TrxPointRequest) (res GetData, err error) {
+	result := []Data{}
+	// summary := map[int]interface{}{}
+	data := p.point.GetPointHistoryList(id, t)
+	totalBefore := 0
+	totalAfter := 0
+	for _, i := range data {
+		result = append(result, i)
+		totalAfter = i.Ss_point_after + totalAfter
+		totalBefore = i.Ss_point_before + totalBefore
 	}
 
-	u := Upline{
-		TotalAllData: dataParent.TotalAllData,
-		Results:      dataParent.Results,
-	}
-	d := Downline{
-		TotalAllData: len(domain),
-		Results:      domain,
-	}
-	upline = append(upline, u)
-	downline = append(downline, d)
-	i := Info{
-		Upline:   upline,
-		Downline: downline,
+	s := Point{
+		TotalPointBefore:       totalBefore,
+		TotalPointAddition:     102,
+		TotalPointSubstraction: 10,
+		TotalPointAfter:        totalAfter,
 	}
 
-	info = append(info, i)
-
-	res.TotalAllData = u.TotalAllData + d.TotalAllData
-	res.Result = info
+	res.Summary = s
+	res.TotalAllData = len(result)
+	res.Result = result
 
 	return res, nil
 }
 
-func (r *referralService) RegisterRef(Parent_id int, Child_id int, idToken int) (*Data, error) {
-	err := r.referral.Register(Parent_id, Child_id, idToken)
+func (p *pointHistoryService) StorePointHistoryService(s StoreTrxPointReq) error {
+	err := p.point.StorePointHistoryList(s)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return nil, nil
+
+	return nil
 }
 
-func (r *referralService) UpdateRef(Parent_id int, Child_id int, To_Parent_id int, idToken int) (*Update, error) {
-	err := r.referral.UpdateReferral(Parent_id, Child_id, To_Parent_id, idToken)
-	if err != nil {
-		return nil, err
-	}
-	return nil, nil
-}
-
-func GetIdToken(token string) (res Upline, err error) {
+func GetIdToken(token string) (id int, err error) {
 	url := fmt.Sprintf("http://192.168.97.121:8000/seen/user/profile")
 	var bearer = "Bearer " + token
 	req, err := http.NewRequest("GET", url, nil)
@@ -114,19 +90,8 @@ func GetIdToken(token string) (res Upline, err error) {
 		fmt.Println(parser)
 	}
 	d, _ := parser.QueryToInt64("message.data.id")
-	name, _ := parser.QueryToString("message.data.username")
+	id = int(d)
 
-	result := []Result{}
+	return id, nil
 
-	r := Result{
-		Parent_id: int(d),
-		Name:      name,
-	}
-
-	result = append(result, r)
-
-	res.TotalAllData = len(result)
-	res.Results = result
-
-	return res, nil
 }

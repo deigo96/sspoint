@@ -1,4 +1,4 @@
-module referralUser-service
+module pointHistory-service
 
 go 1.19
 

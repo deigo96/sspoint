@@ -1,15 +1,15 @@
 package config
 
 import (
-	"referralUser-service/helper"
-	"referralUser-service/model"
+	"pointHistory-service/helper"
+	"pointHistory-service/model"
 )
 
-func RepositoryFactory(dbCon *DatabaseConnection) helper.AuthService {
-	var Repository helper.AuthService
+func RepositoryFactory(dbCon *DatabaseConnection) helper.PointHistoryList {
+	var Repository helper.PointHistoryList
 
 	if dbCon.Driver == PostgreSQL {
-		Repository = model.NewRegisterReferral(dbCon.PostgreSQL)
+		Repository = model.NewPointHistoryService(dbCon.PostgreSQL)
 	} else {
 		panic("Database driver not supported")
 	}
